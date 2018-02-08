@@ -61,12 +61,14 @@ class CreateUserActivity : AppCompatActivity() {
 
     fun createUserBtnClicked(view: View) {
 
-        enableSpinner(true)
+
 
         val email = createuserEmailTxt.text.toString()
         val password = createuserPasswordTxt.text.toString()
 
         val username = createuserUsernameTxt.text.toString()
+
+        enableSpinner(true)
 
         if(username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
 
