@@ -1,6 +1,9 @@
 package com.devanshisukhija.smack.Controller
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
@@ -23,13 +26,14 @@ import io.socket.client.IO
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
 
     val socket = IO.socket(SOCKET_URL)
-
     lateinit var channelAdapter :ArrayAdapter<Channel>
+    var selectableChannel : Channel? = null
 
     private fun setupAdapters() {
         channelAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,MessageService.channels)
@@ -50,6 +54,9 @@ class MainActivity : AppCompatActivity() {
 
         setupAdapters()
 
+        if(App.prefs.isloogedIn) {
+            AuthService.findUserbyEmail(this){}
+        }
 
 
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
@@ -57,6 +64,13 @@ class MainActivity : AppCompatActivity() {
 
         socket.connect()
         socket.on("channelCreated", onNewchannel)
+
+        channel_list.setOnItemClickListener { _ ,_, position, _ ->
+            selectableChannel = MessageService.channels[position]
+            drawer_layout.closeDrawer(GravityCompat.START)
+            updateWithChannel()
+        }
+
     }
 
     override fun onResume() {
@@ -74,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
     private val userDataChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
-            if(AuthService.isLoggedIn){
+            if(App.prefs.isloogedIn){
                 userNameNavHeader.text = UserDataService.name
                 userEmailNavHeader.text = UserDataService.email
                 val resourceId = resources.getIdentifier(UserDataService.avatarName, "drawable",
@@ -83,9 +97,15 @@ class MainActivity : AppCompatActivity() {
                // userImageNavHeader.setBackgroundColor(UserDataService.returnAvatarColor(UserDataService.avatarColor))
                 loginBtnNavHeader.text = "Logout"
 
-                MessageService.getChannels(context){complete ->
+                MessageService.getChannels{complete ->
                     if(complete){
-                        channelAdapter.notifyDataSetChanged()
+                        if(MessageService.channels.count() > 0){
+                            selectableChannel = MessageService.channels[0]
+
+                            channelAdapter.notifyDataSetChanged()
+
+                            updateWithChannel()
+                        }
                     }
 
                 }
@@ -104,7 +124,7 @@ class MainActivity : AppCompatActivity() {
     fun loginNavBtnClicked(view:View) {
 
        lateinit var loginIntent : Intent
-        if(AuthService.isLoggedIn) {
+        if(App.prefs.isloogedIn) {
 
             UserDataService.logout()
             userNameNavHeader.text = "Login"
@@ -130,7 +150,7 @@ class MainActivity : AppCompatActivity() {
             val builder = AlertDialog.Builder(this)
             val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
             builder.setView(dialogView)
-                    .setPositiveButton("Add") { dialog: DialogInterface?, which: Int ->
+                    .setPositiveButton("Add") { _, _: Int ->
 
                         val nameTextField = dialogView.findViewById<EditText>(R.id.dialogChannelName)
                         val desxTextField = dialogView.findViewById<EditText>(R.id.channelDescription)
@@ -142,7 +162,7 @@ class MainActivity : AppCompatActivity() {
                         socket.emit("newChannel", channelName , channelDesc)
 
                     }
-                    .setNegativeButton("Cancel" ){ DialogInterface, i ->
+                    .setNegativeButton("Cancel" ){ _, _ ->
                         hideKeyboard()
                     }
                     .show()
@@ -174,5 +194,9 @@ class MainActivity : AppCompatActivity() {
         if (inputManager.isAcceptingText) {
             inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
         }
+    }
+
+    fun updateWithChannel(){
+        mainChannelName.text = "#${selectableChannel?.name}"
     }
 }
