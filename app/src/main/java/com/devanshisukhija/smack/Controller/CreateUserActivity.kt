@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.devanshisukhija.smack.R
@@ -80,11 +81,11 @@ class CreateUserActivity : AppCompatActivity() {
                                     LocalBroadcastManager.getInstance(this).sendBroadcast(userDataChange)
                                     enableSpinner(false)
                                     finish()
-                                } else { errorToast()}
+                                } else { errorToast("createUser")}
                             }
-                        } else { errorToast()}
+                        } else { errorToast("login user")}
                     }
-                } else { errorToast()}
+                } else { errorToast("account")}
             }
         } else {
             Toast.makeText(this, "Make sure username, email and password are filled in.", Toast.LENGTH_LONG).show()
@@ -106,8 +107,9 @@ class CreateUserActivity : AppCompatActivity() {
         createuserBgcolorBtn.isEnabled = true
     }
 
-    fun errorToast() {
+    fun errorToast(msg : String) {
         enableSpinner(false)
+        Log.d("CREATE", msg)
         Toast.makeText(this, "Something went wrong, please try again", Toast.LENGTH_LONG).show()
     }
 }
