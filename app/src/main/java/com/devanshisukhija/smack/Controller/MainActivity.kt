@@ -11,12 +11,15 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.devanshisukhija.smack.Model.Channel
 import com.devanshisukhija.smack.R
 import com.devanshisukhija.smack.Services.AuthService
+import com.devanshisukhija.smack.Services.MessageService
 import com.devanshisukhija.smack.Services.UserDataService
 import com.devanshisukhija.smack.Utilities.BROADCAST_USER_DATA_CHANGE
 import com.devanshisukhija.smack.Utilities.SOCKET_URL
 import io.socket.client.IO
+import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
@@ -40,21 +43,20 @@ class MainActivity : AppCompatActivity() {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
                 BROADCAST_USER_DATA_CHANGE ))
+
+        socket.connect()
+        socket.on("channelCreated", onNewchannel)
     }
 
     override fun onResume() {
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
                 IntentFilter(BROADCAST_USER_DATA_CHANGE))
         super.onResume()
-        socket.connect()
-    }
-    override fun onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
-        super.onPause()
-
     }
 
     override fun onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
+
         socket.disconnect()
         super.onDestroy()
     }
@@ -129,6 +131,19 @@ class MainActivity : AppCompatActivity() {
 
        // }
 
+    }
+
+    //this works on the worker thread
+    private val onNewchannel = Emitter.Listener { args ->
+        runOnUiThread {
+            val channelName= args[0] as String
+            val channelDesc = args[1] as String
+            val channelId = args[2] as String
+
+            val newChannel = Channel(channelName, channelDesc, channelId)
+
+            MessageService.channels.add(newChannel)
+        }
     }
 
     fun senMsgBtnClicked(view:View) {
