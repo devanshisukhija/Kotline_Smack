@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/messageAvatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/dark19" />
+
+    <TextView
+        android:id="@+id/messageNameTxt"
+        android:layout_width="65dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/messageAvatar"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Devanshi" />
+
+    <TextView
+        android:id="@+id/messageTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Mar 11, 10:30PM"
+        app:layout_constraintStart_toEndOf="@+id/messageNameTxt"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/messageBodyTxt"
+        android:layout_width="312dp"
+        android:layout_height="133dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:text="dfshfkldshlfksdh  dfshfkldshlfksdh dfshfkldshlfksdh dfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdh dfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdh dfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdh dfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdh dfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdh dfshfkldshlfksdhdfshfkldshlfksdh dfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdh dfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdh dfshfkldshlfksdhdfshfkldshlfksdhdfshfkldshlfksdh v"
+        app:layout_constraintStart_toEndOf="@+id/messageAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/messageNameTxt" />
+</android.support.constraint.ConstraintLayout>
